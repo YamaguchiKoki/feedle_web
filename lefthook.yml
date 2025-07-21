@@ -1,15 +1,10 @@
-EXAMPLE USAGE:
-
-  Refer for explanation to following link:
-  https://lefthook.dev/configuration/
-
 pre-push:
   jobs:
     - name: packages audit
       tags:
         - frontend
         - security
-      run: npm audit
+      run: npm audit --production
 
 pre-commit:
   parallel: true
