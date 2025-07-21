@@ -5,6 +5,7 @@ import "./globals.css";
 import "katex/dist/katex.min.css";
 import { Toaster } from "sonner";
 import { ThemeProvider } from "@/components/theme-provider";
+import { TRPCProvider } from "@/lib/trpc/client";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -48,8 +49,10 @@ export default function RootLayout({
 					enableSystem
 					disableTransitionOnChange
 				>
-					{children}
-					<Toaster />
+					<TRPCProvider>
+						{children}
+						<Toaster />
+					</TRPCProvider>
 				</ThemeProvider>
 			</body>
 		</html>
