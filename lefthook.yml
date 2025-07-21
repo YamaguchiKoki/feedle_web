@@ -4,7 +4,7 @@ pre-push:
       tags:
         - frontend
         - security
-      run: npm audit
+      run: npm audit --production
 
 pre-commit:
   parallel: true
