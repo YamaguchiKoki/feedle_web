@@ -1,0 +1,7 @@
+[env]
+_.file = [".env"]
+_.path = ['./node_modules/.bin']
+
+[tools]
+lefthook = "1.12.2"
+node = '22.12'
