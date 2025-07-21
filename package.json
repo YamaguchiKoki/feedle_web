@@ -4,13 +4,14 @@
 	"private": true,
 	"scripts": {
 		"dev": "next dev",
-		"build": "next build",
+		"build": "NODE_ENV=production next build",
 		"start": "next start",
 		"check": "biome check .",
 		"check:fix": "biome check . --write",
 		"generate": "drizzle-kit generate",
 		"push": "drizzle-kit push",
 		"migrate": "drizzle-kit migrate",
+		"db:reset": "cd supabase && npx supabase db reset",
 		"studio": "open http://127.0.0.1:54323",
 		"deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy",
 		"preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
@@ -18,12 +19,18 @@
 	},
 	"dependencies": {
 		"@opennextjs/cloudflare": "^1.5.1",
+		"@supabase/auth-ui-react": "^0.4.7",
+		"@supabase/auth-ui-shared": "^0.1.8",
+		"@supabase/ssr": "^0.6.1",
+		"@supabase/supabase-js": "^2.52.0",
+		"@t3-oss/env-nextjs": "^0.13.8",
 		"dotenv": "^17.2.0",
 		"drizzle-orm": "^0.44.3",
 		"next": "15.3.5",
 		"postgres": "^3.4.7",
 		"react": "^19.0.0",
-		"react-dom": "^19.0.0"
+		"react-dom": "^19.0.0",
+		"zod": "^4.0.5"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "2.1.2",
