@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { FilterCarousel } from "@/components/filter-carousel";
 import { Card, CardContent } from "@/components/ui/card";
-import { ContentTab } from "@/modules/home/ui/content-tab";
+import { ContentTab } from "@/modules/home/ui/components/content-tab";
 
 interface MainContentProps {
 	date: string;

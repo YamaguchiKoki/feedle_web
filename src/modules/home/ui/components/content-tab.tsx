@@ -5,8 +5,8 @@ import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
-import { ChatInterface } from "@/modules/home/ui/chat-interface";
-import { MarkdownRenderer } from "@/modules/home/ui/markdown-renderer";
+import { ChatInterface } from "@/modules/home/ui/components/chat-interface";
+import { MarkdownRenderer } from "@/modules/home/ui/components/markdown-renderer";
 
 // Mock data for different apps
 const mockData = {
