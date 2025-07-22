@@ -9,5 +9,5 @@ pre-push:
 pre-commit:
   parallel: true
   jobs:
-    - run: biome check {staged_files}
+    - run: biome check --no-errors-on-unmatched {staged_files}
       glob: "*.{js,ts,jsx,tsx}"

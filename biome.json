@@ -8,11 +8,13 @@
 	"files": {
 		"ignoreUnknown": false,
 		"includes": [
+			"src/**",
+			"!src/components/ui/**",
 			"!node_modules/**",
 			"!.next/**",
 			"!dist/**",
-			"src/**",
-			"drizzle.config.ts"
+			"drizzle.config.ts",
+			"!src/**/mock-data.ts"
 		]
 	},
 	"formatter": {
