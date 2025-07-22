@@ -83,6 +83,16 @@ export const fetchedDataRouter = createTRPCRouter({
 				throw new Error(`Article with id ${id} not found`);
 			}
 
-			return foundItem;
+			// コンテンツを制限して返す（Cloudflare Workers対応）
+			const truncatedItem = {
+				...foundItem,
+				content:
+					foundItem.content && foundItem.content.length > 10000
+						? foundItem.content.substring(0, 10000) +
+							"\n\n...(truncated for performance)"
+						: foundItem.content,
+			};
+
+			return truncatedItem;
 		}),
 });

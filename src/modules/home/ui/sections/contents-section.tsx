@@ -56,9 +56,17 @@ const ContentsSectionSuspense = () => {
 };
 
 const ArticleDetail = ({ articleId }: { articleId: string }) => {
-	const [article] = trpc.fetchedData.getById.useSuspenseQuery({
-		id: articleId,
-	});
+	const [article] = trpc.fetchedData.getById.useSuspenseQuery(
+		{
+			id: articleId,
+		},
+		{
+			// リトライ設定
+			retry: 2,
+			retryDelay: 1000,
+			staleTime: 30000,
+		},
+	);
 
 	if (!article) {
 		return <EmptyState message={MESSAGES.ARTICLE_NOT_FOUND} />;
