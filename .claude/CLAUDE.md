@@ -6,6 +6,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 feedle-web is a content aggregation platform built with Next.js 15 (App Router), TypeScript, and deployed on Cloudflare Workers. It collects and organizes content from multiple social media platforms (Reddit, Twitter, YouTube, Instagram, HackerNews) using a Supabase backend.
 
+## Conversation Guidelines
+
+- 常に日本語で会話する
+
 ## Development Commands
 
 ### Core Development
