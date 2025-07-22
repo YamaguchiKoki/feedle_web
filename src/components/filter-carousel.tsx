@@ -1,6 +1,5 @@
 "use client";
 import { useEffect, useState } from "react";
-// TODO: テンプレート化 storybook作成など
 import { Badge } from "@/components/ui/badge";
 import {
 	Carousel,

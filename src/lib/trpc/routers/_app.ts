@@ -4,8 +4,12 @@ import {
 	createTRPCRouter,
 	protectedProcedure,
 } from "@/lib/trpc/init";
+import { dataSourceRouter } from "@/modules/home/server/data-source/procedure";
+import { fetchedDataRouter } from "@/modules/home/server/fetched-data/procedure";
 
 export const appRouter = createTRPCRouter({
+	dataSources: dataSourceRouter,
+	fetchedData: fetchedDataRouter,
 	// Public procedure example
 	hello: baseProcedure
 		.input(z.object({ name: z.string().optional() }))

@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import type React from "react";
 import "./globals.css";
 import "katex/dist/katex.min.css";
+import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { Toaster } from "sonner";
 import { ThemeProvider } from "@/components/theme-provider";
 import { TRPCProvider } from "@/lib/trpc/client";
@@ -50,7 +51,7 @@ export default function RootLayout({
 					disableTransitionOnChange
 				>
 					<TRPCProvider>
-						{children}
+						<NuqsAdapter>{children}</NuqsAdapter>
 						<Toaster />
 					</TRPCProvider>
 				</ThemeProvider>

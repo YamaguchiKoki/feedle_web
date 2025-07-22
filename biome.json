@@ -13,7 +13,8 @@
 			"!node_modules/**",
 			"!.next/**",
 			"!dist/**",
-			"drizzle.config.ts"
+			"drizzle.config.ts",
+			"!src/**/mock-data.ts"
 		]
 	},
 	"formatter": {

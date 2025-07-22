@@ -12,18 +12,18 @@ interface HomeLayoutProps {
 
 export default function HomeLayout({ children }: HomeLayoutProps) {
 	return (
-		<div className="flex min-h-screen">
+		<div className="flex h-screen overflow-hidden">
 			<Navigation />
 			<SidebarProvider>
 				<AppSidebar />
-				<div className="flex flex-col flex-1">
+				<div className="flex flex-col flex-1 overflow-hidden">
 					<div
-						className={`flex items-center p-2 bg-background ${LAYOUT_CLASSES.contentMarginTop}`}
+						className={`flex items-center p-2 bg-background ${LAYOUT_CLASSES.contentMarginTop} flex-shrink-0`}
 					>
 						<SidebarTrigger className="ml-2" />
 					</div>
 					{/* Main Content */}
-					<main className="flex-1 bg-background">{children}</main>
+					<main className="flex-1 bg-background overflow-auto">{children}</main>
 				</div>
 			</SidebarProvider>
 		</div>
