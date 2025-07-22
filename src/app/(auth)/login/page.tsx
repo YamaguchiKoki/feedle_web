@@ -4,6 +4,7 @@ import { Auth } from "@supabase/auth-ui-react";
 import { ThemeSupa } from "@supabase/auth-ui-shared";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
+import { clientEnv } from "@/env/client";
 import { createClient } from "@/lib/supabase/client";
 
 export default function LoginPage() {
@@ -35,6 +36,7 @@ export default function LoginPage() {
 						supabaseClient={supabase}
 						appearance={{ theme: ThemeSupa }}
 						providers={[]}
+						redirectTo={`${clientEnv.NEXT_PUBLIC_APP_URL}/dashboard`}
 					/>
 				</div>
 			</div>
