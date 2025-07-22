@@ -80,6 +80,7 @@ jobs:
         run: |
           echo "NEXT_PUBLIC_SUPABASE_URL=${{ secrets.PROD_SUPABASE_URL }}" > .env.production
           echo "NEXT_PUBLIC_SUPABASE_ANON_KEY=${{ secrets.PROD_SUPABASE_ANON_KEY }}" >> .env.production
+          echo "NEXT_PUBLIC_APP_URL=${{ secrets.PROD_APP_URL }}" >> .env.production
           echo "DATABASE_URL=${{ secrets.PROD_DATABASE_URL }}" >> .env.production
           echo "NODE_ENV=production" >> .env.production
 
