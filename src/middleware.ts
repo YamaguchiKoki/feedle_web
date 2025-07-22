@@ -32,9 +32,18 @@ export async function middleware(request: NextRequest) {
 	);
 
 	// Refresh session if expired - required for Server Components
-	const {
-		data: { user },
-	} = await supabase.auth.getUser();
+	let user = null;
+	try {
+		const {
+			data: { user: authUser },
+		} = await supabase.auth.getUser();
+		user = authUser;
+	} catch (error) {
+		console.error("Auth error in middleware:", error);
+		// Clear invalid session cookies
+		supabaseResponse.cookies.delete("sb-access-token");
+		supabaseResponse.cookies.delete("sb-refresh-token");
+	}
 
 	// Protected routes - require authentication
 	if (request.nextUrl.pathname.startsWith("/dashboard")) {

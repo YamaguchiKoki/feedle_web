@@ -10,7 +10,17 @@ export default function LogoutPage() {
 
 	useEffect(() => {
 		const signOut = async () => {
-			await supabase.auth.signOut();
+			try {
+				await supabase.auth.signOut();
+				// Clear all local storage and session storage
+				localStorage.clear();
+				sessionStorage.clear();
+			} catch (error) {
+				console.error("Logout error:", error);
+				// Force clear even if signOut fails
+				localStorage.clear();
+				sessionStorage.clear();
+			}
 			router.push("/login");
 		};
 		signOut();
