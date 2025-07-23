@@ -2,10 +2,6 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-## Project Overview
-
-feedle-web is a content aggregation platform built with Next.js 15 (App Router), TypeScript, and deployed on Cloudflare Workers. It collects and organizes content from multiple social media platforms (Reddit, Twitter, YouTube, Instagram, HackerNews) using a Supabase backend.
-
 ## Conversation Guidelines
 
 - 常に日本語で会話する
@@ -13,83 +9,94 @@ feedle-web is a content aggregation platform built with Next.js 15 (App Router),
 ## Development Commands
 
 ### Core Development
-```bash
-npm run dev              # Start development server
-npm run build            # Production build 
-npm run start            # Start production server
-```
+- `npm run dev` - Start Next.js development server
+- `npm run build` - Production build (sets NODE_ENV=production)
+- `npm start` - Start production server
+- `npm run scan` - Development with React Scan performance monitoring
 
 ### Code Quality
-```bash
-npm run check            # Run Biome linter/formatter
-npm run check:fix        # Auto-fix Biome issues
-```
+- `npm run check` - Run Biome linter and formatter checks
+- `npm run check:fix` - Auto-fix Biome issues (includes format and organize imports)
 
-### Database Management
+### Database Operations
+- `npm run generate` - Generate Drizzle migrations from schema changes
+- `npm run push` - Apply migrations to local database
+- `npm run migrate` - Apply migrations to production database
+- `npm run db:reset` - Reset local Supabase database
+- `npm run studio` - Open Supabase Studio at http://127.0.0.1:54323
+
+### Supabase Local Development
 ```bash
-supabase start           # Start local Supabase (required for development)
-npm run generate         # Generate Drizzle migrations
-npm run push             # Apply migrations to local DB
-npm run migrate          # Apply migrations to production
-npm run db:reset         # Reset local Supabase database
-npm run studio           # Open Supabase Studio at http://127.0.0.1:54323
+# Start local Supabase stack (run from supabase/ directory)
+supabase start
 ```
 
 ### Deployment
-```bash
-npm run deploy           # Deploy to Cloudflare Workers
-npm run preview          # Preview deployment locally
-npm run cf-typegen       # Generate Cloudflare environment types
-```
+- `npm run deploy` - Deploy to Vercel production
+- `npm run preview` - Create Vercel preview deployment
 
-## Architecture
+## Architecture Overview
 
-### Tech Stack
+### Stack
 - **Framework**: Next.js 15 with App Router
-- **Runtime**: React 19 with TypeScript 5
-- **Database**: PostgreSQL with Drizzle ORM
-- **Backend**: Supabase (auth + database)
-- **API**: tRPC for type-safe APIs
-- **Styling**: Tailwind CSS 4 + shadcn/ui
-- **Deployment**: Cloudflare Workers via OpenNext
+- **Language**: TypeScript
+- **Database**: PostgreSQL via Supabase with Drizzle ORM
+- **Authentication**: Supabase Auth
+- **API Layer**: tRPC with React Query integration
+- **Styling**: Tailwind CSS v4 with Radix UI components
+- **State Management**: React Query for server state, React context for theme
+- **Code Quality**: Biome for linting and formatting
 
 ### Project Structure
-- `src/app/` - Next.js App Router with route groups:
-  - `(auth)/` - Authentication routes
-  - `(home)/` - Main dashboard
-  - `(landing)/` - Landing page
-- `src/modules/` - Feature-based modules (auth, home)
-- `src/components/` - Reusable UI components with shadcn/ui
-- `src/lib/` - Supabase client, tRPC setup, utilities
-- `src/db/` - Drizzle schema and database configuration
+```
+src/
+├── app/                    # Next.js App Router pages
+│   ├── (auth)/            # Authentication routes
+│   ├── (home)/            # Dashboard and main app
+│   ├── (landing)/         # Landing page
+│   └── api/trpc/          # tRPC API routes
+├── components/            # Reusable UI components
+│   └── ui/               # Radix-based design system
+├── db/                   # Database schema and connection
+├── lib/                  # Core utilities
+│   ├── supabase/         # Auth client/server setup
+│   └── trpc/             # tRPC configuration
+├── modules/              # Feature-based modules
+│   ├── auth/             # Authentication logic
+│   └── home/             # Dashboard features
+└── hooks/                # Custom React hooks
+```
 
-### Key Patterns
-- **Module Structure**: Each feature module contains server logic, UI components, and views
-- **Database Schema**: Comprehensive content aggregation system supporting multiple social platforms
-- **Type Safety**: Full TypeScript with tRPC for end-to-end type safety
-- **Authentication**: Supabase Auth with SSR support
+### Database Schema
+Core entities for content aggregation platform:
+- `users` - User profiles (linked to Supabase Auth)
+- `dataSources` - Content sources (Reddit, Twitter, YouTube, etc.)
+- `userFetchConfigs` - User's data fetching configurations
+- `userConditions` - Search/filter conditions per config
+- `fetchedData` - Aggregated content with metadata
 
-## Development Setup
+### Module Architecture
+Features are organized in `src/modules/` with clean separation:
+- `server/` - tRPC procedures and data access
+- `ui/` - React components (components, layouts, sections, views)
+- `constants/` - Static data and configuration
 
-1. Start local Supabase: `supabase start`
-2. Apply database schema: `npm run push`
-3. Start development server: `npm run dev`
-4. Access Supabase Studio: `npm run studio`
+### API Layer
+- **tRPC Router**: `src/lib/trpc/routers/_app.ts` - Main API entry point
+- **Procedures**: Feature-specific routers in `src/modules/*/server/*/procedure.ts`
+- **Authentication**: `baseProcedure` (public) vs `protectedProcedure` (auth required)
 
-## Code Quality
+### Code Style
+- **Biome Configuration**: Tab indentation, double quotes, import organization
+- **Exclusions**: UI components (`src/components/ui/`) and mock data are excluded from linting
+- **Japanese Comments**: Database schema includes Japanese documentation
 
-The project uses Biome for linting and formatting (configured in `biome.json`). Git hooks via lefthook run quality checks on pre-commit and security audits on pre-push.
+### Authentication Flow
+- Supabase Auth integration with server/client utilities
+- Middleware handles auth state (`src/middleware.ts`)
+- Protected routes require authentication via tRPC `protectedProcedure`
 
-## Current Tasks (from TODO.md)
-
-- Create mock category router
-- Create mock bundle retrieval router  
-- Implement custom hooks
-- Mobile sidebar development
-
-## Important Notes
-
-- Always run `supabase start` before development
-- Use `npm run check:fix` before committing
-- Database changes require migration generation via `npm run generate`
-- Deployment targets Cloudflare Workers - use `npm run cf-typegen` for environment types
+### Development Notes
+- Mock data is used extensively during development phase
+- Local Supabase instance for development
+- Vercel deployment target with production database migrations
