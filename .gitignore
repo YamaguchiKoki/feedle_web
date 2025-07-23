@@ -43,3 +43,6 @@ next-env.d.ts
 .dev.vars*
 .env
 TODO.md
+
+# Cloudflare backup (Vercel migration)
+/cloudflare-backup
