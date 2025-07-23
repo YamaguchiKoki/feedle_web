@@ -4,6 +4,7 @@
 	"private": true,
 	"scripts": {
 		"dev": "next dev",
+		"scan": "next dev & npx react-scan@latest localhost:3000",
 		"build": "NODE_ENV=production next build",
 		"start": "next start",
 		"check": "biome check .",
@@ -54,6 +55,7 @@
 		"react-dom": "^19.0.0",
 		"react-error-boundary": "^6.0.0",
 		"react-markdown": "^10.1.0",
+		"react-scan": "^0.4.3",
 		"rehype-katex": "^7.0.1",
 		"rehype-raw": "^7.0.0",
 		"remark-gfm": "^4.0.1",
