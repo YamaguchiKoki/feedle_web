@@ -62,8 +62,8 @@ const ArticleDetail = ({ articleId }: { articleId: string }) => {
 		},
 		{
 			// リトライ設定
-			retry: 2,
-			retryDelay: 1000,
+			retry: 1, // 本番環境での無駄なリトライを減らす
+			retryDelay: 2000, // リトライまでの時間を延長
 			staleTime: 30000,
 		},
 	);
@@ -210,19 +210,38 @@ const ContentsSectionSkeleton = () => (
 );
 
 const ErrorFallback = ({
+	error,
 	resetErrorBoundary,
 }: {
+	error: Error;
 	resetErrorBoundary: () => void;
-}) => (
-	<Card>
-		<CardContent className="p-8 text-center">
-			<div className="text-destructive mb-2">{MESSAGES.ERROR}</div>
-			<Button
-				onClick={resetErrorBoundary}
-				className="text-sm underline hover:no-underline"
-			>
-				Try again
-			</Button>
-		</CardContent>
-	</Card>
-);
+}) => {
+	const utils = trpc.useUtils();
+	const [selectedArticleId] = useQueryState("article");
+
+	const handleRetry = async () => {
+		// 選択中の記事のキャッシュをクリア
+		if (selectedArticleId) {
+			await utils.fetchedData.getById.invalidate({
+				id: selectedArticleId,
+			});
+		}
+		resetErrorBoundary();
+	};
+
+	return (
+		<Card>
+			<CardContent className="p-8 text-center space-y-4">
+				<div className="space-y-2">
+					<div className="text-destructive font-medium">{MESSAGES.ERROR}</div>
+					<div className="text-sm text-muted-foreground">
+						{error?.message || "記事の読み込み中にエラーが発生しました"}
+					</div>
+				</div>
+				<Button onClick={handleRetry} variant="default" size="sm">
+					キャッシュをクリアして再試行
+				</Button>
+			</CardContent>
+		</Card>
+	);
+};

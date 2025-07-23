@@ -3,6 +3,7 @@
 import { useQueryState } from "nuqs";
 import { Suspense } from "react";
 import { ErrorBoundary } from "react-error-boundary";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { trpc } from "@/lib/trpc/client";
 import { ArticleTitles } from "@/modules/home/ui/components/article-titles";
@@ -29,8 +30,18 @@ export const SideBarSection = () => {
 						<CardTitle className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3">
 							Articles
 						</CardTitle>
-						{/* TODO error fallback ui */}
-						<ErrorBoundary fallback={<div>Something went wrong!</div>}>
+						<ErrorBoundary
+							fallback={
+								<ArticleTitlesErrorFallback
+									date={date}
+									querySource={querySource}
+								/>
+							}
+							onReset={() => {
+								// キャッシュをクリアして再試行
+								window.location.reload();
+							}}
+						>
 							<Suspense fallback={<ArticleTitlesSkeleton />}>
 								<ArticlesTitleSection date={date} querySource={querySource} />
 							</Suspense>
@@ -49,10 +60,20 @@ const ArticlesTitleSection = ({
 	date: string;
 	querySource: string | null;
 }) => {
-	const [data] = trpc.fetchedData.getByDateAndDataSource.useSuspenseQuery({
-		date: date,
-		dataSourceName: querySource,
-	});
+	const [data] = trpc.fetchedData.getByDateAndDataSource.useSuspenseQuery(
+		{
+			date: date,
+			dataSourceName: querySource,
+		},
+		{
+			// キャッシュヒット時の再検証を防ぐ
+			staleTime: 5 * 60 * 1000, // 5分
+			gcTime: 10 * 60 * 1000, // 10分（旧cacheTime）
+			refetchOnMount: false,
+			refetchOnWindowFocus: false,
+			retry: false, // リトライを無効化
+		},
+	);
 
 	console.log("ArticlesTitleSection received data:", {
 		querySource,
@@ -70,6 +91,40 @@ const ArticleTitlesSkeleton = () => {
 			<div className="h-4 bg-muted animate-pulse rounded" />
 			<div className="h-4 bg-muted animate-pulse rounded w-3/4" />
 			<div className="h-4 bg-muted animate-pulse rounded w-1/2" />
+		</div>
+	);
+};
+
+const ArticleTitlesErrorFallback = ({
+	date,
+	querySource,
+}: {
+	date: string;
+	querySource: string | null;
+}) => {
+	const utils = trpc.useUtils();
+
+	const handleRetry = async () => {
+		// キャッシュをクリア
+		await utils.fetchedData.getByDateAndDataSource.invalidate({
+			date,
+			dataSourceName: querySource,
+		});
+		// ページをリロード
+		window.location.reload();
+	};
+
+	return (
+		<div className="space-y-3 p-4 text-center">
+			<div className="text-sm text-destructive">
+				記事の読み込みに失敗しました
+			</div>
+			<Button
+				onClick={handleRetry}
+				className="px-3 py-1 text-xs bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors"
+			>
+				再試行
+			</Button>
 		</div>
 	);
 };
