@@ -1,7 +1,5 @@
 "use client";
 
-import { useQueryClient } from "@tanstack/react-query";
-import { getQueryKey } from "@trpc/react-query";
 import { useQueryState } from "nuqs";
 import { Suspense } from "react";
 import { ErrorBoundary } from "react-error-boundary";
@@ -33,15 +31,10 @@ export const SideBarSection = () => {
 							Articles
 						</CardTitle>
 						<ErrorBoundary
-							fallback={
-								<ArticleTitlesErrorFallback
-									date={date}
-									querySource={querySource}
-								/>
-							}
+							fallback={<ArticleTitlesErrorFallback />}
 							onReset={() => {
-								// キャッシュをクリアして再試行
-								window.location.reload();
+								// 無限ループ防止のため、リトライを無効化
+								console.log("ErrorBoundary reset - manual reload required");
 							}}
 						>
 							<Suspense fallback={<ArticleTitlesSkeleton />}>
@@ -68,15 +61,13 @@ const ArticlesTitleSection = ({
 			dataSourceName: querySource,
 		},
 		{
-			// エラー回復を優先した設定
-			staleTime: 30 * 1000, // 30秒に短縮
-			gcTime: 2 * 60 * 1000, // 2分に短縮
-			refetchOnMount: true, // マウント時は常に再検証
+			// 無限ループ防止のため、リトライを無効化
+			staleTime: 30 * 1000,
+			gcTime: 2 * 60 * 1000,
+			refetchOnMount: false, // マウント時再検証を無効化
 			refetchOnWindowFocus: false,
-			retry: 1,
+			retry: false, // リトライを完全に無効化
 			retryDelay: 1000,
-			// エラー時のキャッシュ時間を短縮
-			retryOnMount: true,
 		},
 	);
 
@@ -100,43 +91,11 @@ const ArticleTitlesSkeleton = () => {
 	);
 };
 
-const ArticleTitlesErrorFallback = ({
-	date,
-	querySource,
-}: {
-	date: string;
-	querySource: string | null;
-}) => {
-	const utils = trpc.useUtils();
-	const queryClient = useQueryClient();
-
-	const handleRetry = async () => {
-		try {
-			// 該当するクエリキャッシュを完全に削除
-			const queryKey = getQueryKey(trpc.fetchedData.getByDateAndDataSource, {
-				date,
-				dataSourceName: querySource,
-			});
-			queryClient.removeQueries({ queryKey });
-
-			// さらにinvalidateで確実にクリア
-			await utils.fetchedData.getByDateAndDataSource.invalidate({
-				date,
-				dataSourceName: querySource,
-			});
-
-			// 少し待ってからリロード
-			setTimeout(() => {
-				window.location.reload();
-			}, 100);
-		} catch (error) {
-			console.error("Cache clear failed:", error);
-			// フォールバック: 全体キャッシュクリア
-			queryClient.clear();
-			setTimeout(() => {
-				window.location.reload();
-			}, 100);
-		}
+const ArticleTitlesErrorFallback = () => {
+	const handleRetry = () => {
+		// 無限ループ防止のため、複雑なキャッシュ操作を避けて直接リロード
+		console.warn("Manual page reload to prevent infinite retry loop");
+		window.location.reload();
 	};
 
 	return (

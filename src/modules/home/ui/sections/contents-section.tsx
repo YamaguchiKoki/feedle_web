@@ -1,7 +1,6 @@
 "use client";
 
 import { useQueryClient } from "@tanstack/react-query";
-import { getQueryKey } from "@trpc/react-query";
 import {
 	CalendarIcon,
 	ExternalLinkIcon,
@@ -38,7 +37,10 @@ export const ContentsSection = () => {
 	return (
 		<ErrorBoundary
 			FallbackComponent={ErrorFallback}
-			onReset={() => window.location.reload()}
+			onReset={() => {
+				// 無限ループ防止のため、リトライを無効化
+				console.log("ErrorBoundary reset - manual reload required");
+			}}
 		>
 			<Suspense fallback={<ContentsSectionSkeleton />}>
 				<ContentsSectionSuspense />
@@ -63,10 +65,12 @@ const ArticleDetail = ({ articleId }: { articleId: string }) => {
 			id: articleId,
 		},
 		{
-			// リトライ設定
-			retry: 1, // 本番環境での無駄なリトライを減らす
-			retryDelay: 2000, // リトライまでの時間を延長
+			// 無限ループ防止のため、リトライを無効化
+			retry: false, // リトライを完全に無効化
+			retryDelay: 2000,
 			staleTime: 30000,
+			refetchOnMount: false,
+			refetchOnWindowFocus: false,
 		},
 	);
 
@@ -213,36 +217,18 @@ const ContentsSectionSkeleton = () => (
 
 const ErrorFallback = ({
 	error,
-	resetErrorBoundary,
 }: {
 	error: Error;
 	resetErrorBoundary: () => void;
 }) => {
-	const utils = trpc.useUtils();
-	const queryClient = useQueryClient();
-	const [selectedArticleId] = useQueryState("article");
+	const _utils = trpc.useUtils();
+	const _queryClient = useQueryClient();
+	const [_selectedArticleId] = useQueryState("article");
 
-	const handleRetry = async () => {
-		try {
-			if (selectedArticleId) {
-				// 該当するクエリキャッシュを完全に削除
-				const queryKey = getQueryKey(trpc.fetchedData.getById, {
-					id: selectedArticleId,
-				});
-				queryClient.removeQueries({ queryKey });
-
-				// さらにinvalidateで確実にクリア
-				await utils.fetchedData.getById.invalidate({
-					id: selectedArticleId,
-				});
-			}
-			resetErrorBoundary();
-		} catch (clearError) {
-			console.error("Cache clear failed:", clearError);
-			// フォールバック: 全体キャッシュクリア
-			queryClient.clear();
-			resetErrorBoundary();
-		}
+	const handleRetry = () => {
+		// 無限ループ防止のため、複雑なキャッシュ操作を避けて直接リロード
+		console.warn("Manual page reload to prevent infinite retry loop");
+		window.location.reload();
 	};
 
 	return (
