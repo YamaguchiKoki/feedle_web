@@ -84,9 +84,6 @@ jobs:
           echo "DATABASE_URL=${{ secrets.PROD_DATABASE_URL }}" >> .env.production
           echo "NODE_ENV=production" >> .env.production
 
-      - name: Build for production
-        run: npm run build
-
       - name: Deploy to Cloudflare (Production)
         run: npm run deploy
         env:

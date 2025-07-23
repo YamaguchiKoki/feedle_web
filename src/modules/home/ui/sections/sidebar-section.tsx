@@ -1,5 +1,7 @@
 "use client";
 
+import { useQueryClient } from "@tanstack/react-query";
+import { getQueryKey } from "@trpc/react-query";
 import { useQueryState } from "nuqs";
 import { Suspense } from "react";
 import { ErrorBoundary } from "react-error-boundary";
@@ -66,13 +68,15 @@ const ArticlesTitleSection = ({
 			dataSourceName: querySource,
 		},
 		{
-			// キャッシュヒット時の再検証を防ぐ
-			staleTime: 5 * 60 * 1000, // 5分
-			gcTime: 10 * 60 * 1000, // 10分（旧cacheTime）
-			refetchOnMount: false,
+			// エラー回復を優先した設定
+			staleTime: 30 * 1000, // 30秒に短縮
+			gcTime: 2 * 60 * 1000, // 2分に短縮
+			refetchOnMount: true, // マウント時は常に再検証
 			refetchOnWindowFocus: false,
-			retry: 1, // 1回だけリトライ
+			retry: 1,
 			retryDelay: 1000,
+			// エラー時のキャッシュ時間を短縮
+			retryOnMount: true,
 		},
 	);
 
@@ -104,15 +108,35 @@ const ArticleTitlesErrorFallback = ({
 	querySource: string | null;
 }) => {
 	const utils = trpc.useUtils();
+	const queryClient = useQueryClient();
 
 	const handleRetry = async () => {
-		// キャッシュをクリア
-		await utils.fetchedData.getByDateAndDataSource.invalidate({
-			date,
-			dataSourceName: querySource,
-		});
-		// ページをリロード
-		window.location.reload();
+		try {
+			// 該当するクエリキャッシュを完全に削除
+			const queryKey = getQueryKey(trpc.fetchedData.getByDateAndDataSource, {
+				date,
+				dataSourceName: querySource,
+			});
+			queryClient.removeQueries({ queryKey });
+
+			// さらにinvalidateで確実にクリア
+			await utils.fetchedData.getByDateAndDataSource.invalidate({
+				date,
+				dataSourceName: querySource,
+			});
+
+			// 少し待ってからリロード
+			setTimeout(() => {
+				window.location.reload();
+			}, 100);
+		} catch (error) {
+			console.error("Cache clear failed:", error);
+			// フォールバック: 全体キャッシュクリア
+			queryClient.clear();
+			setTimeout(() => {
+				window.location.reload();
+			}, 100);
+		}
 	};
 
 	return (

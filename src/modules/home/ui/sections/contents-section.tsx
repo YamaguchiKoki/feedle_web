@@ -1,5 +1,7 @@
 "use client";
 
+import { useQueryClient } from "@tanstack/react-query";
+import { getQueryKey } from "@trpc/react-query";
 import {
 	CalendarIcon,
 	ExternalLinkIcon,
@@ -217,16 +219,30 @@ const ErrorFallback = ({
 	resetErrorBoundary: () => void;
 }) => {
 	const utils = trpc.useUtils();
+	const queryClient = useQueryClient();
 	const [selectedArticleId] = useQueryState("article");
 
 	const handleRetry = async () => {
-		// 選択中の記事のキャッシュをクリア
-		if (selectedArticleId) {
-			await utils.fetchedData.getById.invalidate({
-				id: selectedArticleId,
-			});
+		try {
+			if (selectedArticleId) {
+				// 該当するクエリキャッシュを完全に削除
+				const queryKey = getQueryKey(trpc.fetchedData.getById, {
+					id: selectedArticleId,
+				});
+				queryClient.removeQueries({ queryKey });
+
+				// さらにinvalidateで確実にクリア
+				await utils.fetchedData.getById.invalidate({
+					id: selectedArticleId,
+				});
+			}
+			resetErrorBoundary();
+		} catch (clearError) {
+			console.error("Cache clear failed:", clearError);
+			// フォールバック: 全体キャッシュクリア
+			queryClient.clear();
+			resetErrorBoundary();
 		}
-		resetErrorBoundary();
 	};
 
 	return (
