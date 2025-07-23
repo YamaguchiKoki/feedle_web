@@ -14,12 +14,10 @@
 		"migrate": "drizzle-kit migrate",
 		"db:reset": "cd supabase && npx supabase db reset",
 		"studio": "open http://127.0.0.1:54323",
-		"deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy",
-		"preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
-		"cf-typegen": "wrangler types --env-interface CloudflareEnv ./cloudflare-env.d.ts"
+		"deploy": "vercel --prod",
+		"preview": "vercel"
 	},
 	"dependencies": {
-		"@opennextjs/cloudflare": "^1.5.1",
 		"@radix-ui/react-avatar": "^1.1.10",
 		"@radix-ui/react-dialog": "^1.1.14",
 		"@radix-ui/react-label": "^2.1.7",
@@ -74,7 +72,6 @@
 		"drizzle-kit": "^0.31.4",
 		"tailwindcss": "^4",
 		"tw-animate-css": "^1.3.5",
-		"typescript": "^5",
-		"wrangler": "^4.25.0"
+		"typescript": "^5"
 	}
 }
