@@ -47,9 +47,10 @@ jobs:
             - Potential bugs or issues
             - Performance considerations
             - Security concerns
-            - Test coverage
             
             Be constructive and helpful in your feedback.
+            
+            IMPORTANT: Write your entire response in Japanese language.
 
           # Optional: Use sticky comments to make Claude reuse the same comment on subsequent pushes to the same PR
           # use_sticky_comment: true
