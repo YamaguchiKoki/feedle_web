@@ -71,7 +71,8 @@ const ArticlesTitleSection = ({
 			gcTime: 10 * 60 * 1000, // 10分（旧cacheTime）
 			refetchOnMount: false,
 			refetchOnWindowFocus: false,
-			retry: false, // リトライを無効化
+			retry: 1, // 1回だけリトライ
+			retryDelay: 1000,
 		},
 	);
 
@@ -119,10 +120,7 @@ const ArticleTitlesErrorFallback = ({
 			<div className="text-sm text-destructive">
 				記事の読み込みに失敗しました
 			</div>
-			<Button
-				onClick={handleRetry}
-				className="px-3 py-1 text-xs bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors"
-			>
+			<Button onClick={handleRetry} size="sm" variant="default">
 				再試行
 			</Button>
 		</div>
