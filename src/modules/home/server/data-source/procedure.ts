@@ -1,11 +1,8 @@
 import type { DataSource } from "@/db/schema";
-import { createTRPCRouter, protectedProcedure } from "@/lib/trpc/init";
+import { baseProcedure, createTRPCRouter } from "@/lib/trpc/init";
 
 export const dataSourceRouter = createTRPCRouter({
-	getMany: protectedProcedure.query(async ({ ctx }) => {
-		const { id } = ctx.user;
-		console.log("successfully get from ctx", id);
-
+	getMany: baseProcedure.query(async () => {
 		const mockDataSources: DataSource[] = [
 			{
 				id: "550e8400-e29b-41d4-a716-446655440001",
