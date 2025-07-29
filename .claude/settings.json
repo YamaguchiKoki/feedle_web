@@ -6,7 +6,8 @@
       "Bash(ls:*)",
       "Bash(rg:*)",
       "Bash(mv:*)",
-      "Bash(npm:*)"
+      "Bash(npm:*)",
+      "Bash(npx:*)"
       ],
     "deny": []
   }
