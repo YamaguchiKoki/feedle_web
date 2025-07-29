@@ -1,4 +1,7 @@
-import { Calendar, Home, Inbox, Search, Settings } from "lucide-react";
+"use client";
+
+import { Database, Home } from "lucide-react";
+import { usePathname } from "next/navigation";
 
 import {
 	Sidebar,
@@ -16,32 +19,19 @@ import { LAYOUT_CLASSES } from "@/modules/home/constants/layout";
 const items = [
 	{
 		title: "Home",
-		url: "#",
+		url: "/home",
 		icon: Home,
 	},
 	{
-		title: "Inbox",
-		url: "#",
-		icon: Inbox,
-	},
-	{
-		title: "Calendar",
-		url: "#",
-		icon: Calendar,
-	},
-	{
-		title: "Search",
-		url: "#",
-		icon: Search,
-	},
-	{
-		title: "Settings",
-		url: "#",
-		icon: Settings,
+		title: "データソース",
+		url: "/data-sources",
+		icon: Database,
 	},
 ];
 
 export function AppSidebar() {
+	const pathname = usePathname();
+
 	return (
 		<Sidebar
 			className={`${LAYOUT_CLASSES.sidebarTop} ${LAYOUT_CLASSES.sidebarHeight}`}
@@ -53,7 +43,7 @@ export function AppSidebar() {
 						<SidebarMenu>
 							{items.map((item) => (
 								<SidebarMenuItem key={item.title}>
-									<SidebarMenuButton asChild>
+									<SidebarMenuButton asChild isActive={pathname === item.url}>
 										<a href={item.url}>
 											<item.icon />
 											<span>{item.title}</span>
